@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReachUP — Calculateur ROI</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232563eb'/%3E%3Ctext x='50' y='70' font-size='58' font-weight='800' text-anchor='middle' fill='white' font-family='-apple-system,sans-serif'%3ER%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#fdf6ec; --card:#fffdf8; --ink:#1a2b3c; --muted:#6b7d8f;
+    --green:#16a34a; --green-bg:#ecfdf3; --line:#ece3d4; --accent:#2563eb;
+    --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.04);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);padding:28px 18px;line-height:1.45}
+  .wrap{max-width:1240px;margin:0 auto}
+  .head{text-align:center;margin-bottom:22px;position:relative}
+  .head h1{font-size:26px;font-weight:800;letter-spacing:-.5px}
+  .head p{color:var(--muted);font-size:14px;margin-top:4px}
+  .lang{position:absolute;top:0;right:0;display:flex;gap:4px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px}
+  .lang button{border:0;background:transparent;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted);font-family:inherit}
+  .lang button.on{background:var(--accent);color:#fff}
+  .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}.lang{position:static;justify-content:center;margin:10px auto 0;width:max-content}}
+  .col{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow)}
+  .col h2{font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .col .sub{color:var(--muted);font-size:12.5px;margin:3px 0 18px}
+  label{display:block;font-size:13px;font-weight:600;margin:14px 0 5px}
+  input,select{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:#fff;color:var(--ink);font-family:inherit}
+  input:focus,select:focus{outline:none;border-color:var(--accent)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:18px}
+  .box h3{font-size:15px;font-weight:700;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:6px}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:14.5px}
+  .row .v{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px}
+  .row.g .v{color:var(--green)}
+  .lbl-sub{font-size:11px;color:var(--muted);font-weight:400}
+  .kpi{padding:11px 0;border-bottom:1px solid #f1ece2}
+  .kpi:last-child{border-bottom:0}
+  .kpi .top{display:flex;justify-content:space-between;align-items:baseline}
+  .kpi .name{font-size:14.5px;font-weight:600}
+  .kpi .v{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px}
+  .kpi.g .v{color:var(--green)}
+  .kpi .exp{font-size:11px;color:var(--muted);margin-top:2px}
+  .hl{background:var(--green-bg);border-radius:10px;padding:11px 12px;margin-top:6px}
+  .hl .v{color:var(--green);font-size:18px}
+  .plan{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:18px}
+  .plan h3{font-size:15px;font-weight:700;margin-bottom:8px}
+  .ms{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+  .ms h3{font-size:16px;font-weight:800;margin-bottom:8px}
+  .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="lang">
+      <button id="lang-fr" class="on" onclick="setLang('fr')">FR</button>
+      <button id="lang-en" onclick="setLang('en')">EN</button>
+    </div>
+    <h1 data-t="title">Calculateur ROI — ReachUP</h1>
+    <p data-t="subtitle">Estimez le retour sur investissement de votre campagne outbound</p>
+  </div>
+  <div class="grid">
+    <!-- INPUTS -->
+    <div class="col">
+      <h2>🎯 <span data-t="inHead">Paramètres d'Entrée</span></h2>
+      <div class="sub" data-t="inSub">Configurez tous les paramètres de votre campagne</div>
+
+      <label data-t="plan">Plan ReachUP</label>
+      <select id="plan"><option value="performance">Performance</option></select>
+
+      <label data-t="emails">📧 Emails envoyés/mois</label>
+      <input type="number" id="emails" value="10000">
+
+      <div class="two">
+        <div><label data-t="rr">Taux de réponse (%)</label><input type="number" id="rr" value="2.25" step="0.01"></div>
+        <div><label data-t="prr">Taux réponse positive (%)</label><input type="number" id="prr" value="5" step="0.1"></div>
+      </div>
+      <div class="two">
+        <div><label data-t="book">Taux de réservation (%)</label><input type="number" id="book" value="63.6" step="0.1"></div>
+        <div><label data-t="close">Taux de closing (%)</label><input type="number" id="close" value="25.7" step="0.1"></div>
+      </div>
+
+      <label data-t="acv">Valeur moyenne de contrat (€)</label>
+      <input type="number" id="acv" value="5000">
+
+      <label data-t="ltv">Valeur vie client (LTV) (€)</label>
+      <input type="number" id="ltv" value="30000">
+
+      <div class="plan">
+        <h3>Performance</h3>
+        <div class="row"><span data-t="retainer">Retainer mensuel <span class="lbl-sub">(sans engagement)</span></span><span class="v">500 €</span></div>
+        <div class="row"><span data-t="cpm">Coût par meeting <span class="lbl-sub">(plafonné à 2 000 €/mois)</span></span><span class="v">300 €</span></div>
+      </div>
+    </div>
+
+    <!-- FUNNEL + RESULTS -->
+    <div class="col">
+      <h2>📈 <span data-t="fnHead">Funnel + Résultats</span></h2>
+      <div class="sub" data-t="fnSub">Étapes du funnel et métriques mensuelles</div>
+
+      <div class="box">
+        <h3 data-t="funnel">Funnel</h3>
+        <div class="row"><span data-t="f_emails">Emails envoyés</span><span class="v" id="o_emails">—</span></div>
+        <div class="row"><span data-t="f_contact">Personnes contactées</span><span class="v" id="o_contact">—</span></div>
+        <div class="row"><span data-t="f_resp">Réponses</span><span class="v" id="o_resp">—</span></div>
+        <div class="row"><span data-t="f_pos">Réponses positives</span><span class="v" id="o_pos">—</span></div>
+        <div class="row g"><span data-t="f_meet">Meetings générés/mois</span><span class="v" id="o_meet">—</span></div>
+        <div class="row g"><span data-t="f_deals">Deals/mois</span><span class="v" id="o_deals">—</span></div>
+      </div>
+
+      <div class="box">
+        <h3 data-t="kpis">KPIs Mensuels</h3>
+        <div class="kpi g">
+          <div class="top"><span class="name" data-t="k_rev">Revenus additionnels générés / mois</span><span class="v" id="o_rev">—</span></div>
+          <div class="exp" data-t="k_rev_e">Deals/mois × valeur moyenne de contrat</div>
+        </div>
+        <div class="kpi g">
+          <div class="top"><span class="name" data-t="k_ltv">LTV ajoutée / mois</span><span class="v" id="o_ltvm">—</span></div>
+          <div class="exp" data-t="k_ltv_e">Deals/mois × valeur vie client (LTV)</div>
+        </div>
+        <div class="kpi">
+          <div class="top"><span class="name" data-t="k_cost">Coût mensuel ReachUP</span><span class="v" id="o_cost">—</span></div>
+          <div class="exp" data-t="k_cost_e">500 € + 300 €/meeting, plafonné à 2 000 €</div>
+        </div>
+        <div class="kpi">
+          <div class="top"><span class="name" data-t="k_cac">Coût d'acquisition client</span><span class="v" id="o_cac">—</span></div>
+          <div class="exp" data-t="k_cac_e">Coût mensuel ÷ deals/mois</div>
+        </div>
+        <div class="kpi g">
+          <div class="top"><span class="name" data-t="k_roi">ROI sur revenue mensuel</span><span class="v" id="o_roirev">—</span></div>
+          <div class="exp" data-t="k_roi_e">Revenus / mois ÷ coût mensuel</div>
+        </div>
+        <div class="kpi g hl">
+          <div class="top"><span class="name" data-t="k_roiltv">ROI sur LTV</span><span class="v" id="o_roiltv">—</span></div>
+          <div class="exp" data-t="k_roiltv_e">LTV ajoutée / mois ÷ coût mensuel</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="col">
+      <h2>📅 <span data-t="tlHead">Timeline Mensuelle</span></h2>
+      <div class="sub" data-t="tlSub">Jalons M1, M6 et 1 an</div>
+      <div class="ms"><h3 data-t="m1">M1</h3>
+        <div class="row"><span data-t="cashCum">Cash collecté cumulé</span><span class="v" id="m1c">—</span></div>
+        <div class="row"><span data-t="ltvCum">LTV ajoutée cumulée</span><span class="v" id="m1l">—</span></div></div>
+      <div class="ms"><h3 data-t="m6">M6</h3>
+        <div class="row"><span data-t="cashCum">Cash collecté cumulé</span><span class="v g" id="m6c">—</span></div>
+        <div class="row"><span data-t="ltvCum">LTV ajoutée cumulée</span><span class="v g" id="m6l">—</span></div></div>
+      <div class="ms"><h3 data-t="m12">M12 (1 an)</h3>
+        <div class="row"><span data-t="cashCum">Cash collecté cumulé</span><span class="v g" id="m12c">—</span></div>
+        <div class="row"><span data-t="ltvCum">LTV ajoutée cumulée</span><span class="v g" id="m12l">—</span></div></div>
+    </div>
+  </div>
+  <div class="foot" data-t="foot">ReachUP — goreachup.com · Estimation basée sur la moyenne de nos clients</div>
+</div>
+
+<script>
+const T = {
+  fr:{
+    title:"Calculateur ROI — ReachUP", subtitle:"Estimez le retour sur investissement de votre campagne outbound",
+    inHead:"Paramètres d'Entrée", inSub:"Configurez tous les paramètres de votre campagne",
+    plan:"Plan ReachUP", emails:"📧 Emails envoyés/mois", rr:"Taux de réponse (%)", prr:"Taux réponse positive (%)",
+    book:"Taux de réservation (%)", close:"Taux de closing (%)", acv:"Valeur moyenne de contrat (€)", ltv:"Valeur vie client (LTV) (€)",
+    retainer:"Retainer mensuel <span class='lbl-sub'>(sans engagement)</span>", cpm:"Coût par meeting <span class='lbl-sub'>(plafonné à 2 000 €/mois)</span>",
+    fnHead:"Funnel + Résultats", fnSub:"Étapes du funnel et métriques mensuelles", funnel:"Funnel",
+    f_emails:"Emails envoyés", f_contact:"Personnes contactées", f_resp:"Réponses", f_pos:"Réponses positives",
+    f_meet:"Meetings générés/mois", f_deals:"Deals/mois", kpis:"KPIs Mensuels",
+    k_rev:"Revenus additionnels générés / mois", k_rev_e:"Deals/mois × valeur moyenne de contrat",
+    k_ltv:"LTV ajoutée / mois", k_ltv_e:"Deals/mois × valeur vie client (LTV)",
+    k_cost:"Coût mensuel ReachUP", k_cost_e:"500 € + 300 €/meeting, plafonné à 2 000 €",
+    k_cac:"Coût d'acquisition client", k_cac_e:"Coût mensuel ÷ deals/mois",
+    k_roi:"ROI sur revenue mensuel", k_roi_e:"Revenus / mois ÷ coût mensuel",
+    k_roiltv:"ROI sur LTV", k_roiltv_e:"LTV ajoutée / mois ÷ coût mensuel",
+    tlHead:"Timeline Mensuelle", tlSub:"Jalons M1, M6 et 1 an", m1:"M1", m6:"M6", m12:"M12 (1 an)",
+    cashCum:"Cash collecté cumulé", ltvCum:"LTV ajoutée cumulée",
+    foot:"ReachUP — goreachup.com · Estimation basée sur la moyenne de nos clients",
+    unit:"x", emptyVal:"—"
+  },
+  en:{
+    title:"ROI Calculator — ReachUP", subtitle:"Estimate the return on investment of your outbound campaign",
+    inHead:"Input Parameters", inSub:"Configure all your campaign parameters",
+    plan:"ReachUP Plan", emails:"📧 Emails sent/month", rr:"Response rate (%)", prr:"Positive reply rate (%)",
+    book:"Booking rate (%)", close:"Closing rate (%)", acv:"Average contract value (€)", ltv:"Customer lifetime value (LTV) (€)",
+    retainer:"Monthly retainer <span class='lbl-sub'>(no commitment)</span>", cpm:"Cost per meeting <span class='lbl-sub'>(capped at €2,000/month)</span>",
+    fnHead:"Funnel + Results", fnSub:"Funnel steps and monthly metrics", funnel:"Funnel",
+    f_emails:"Emails sent", f_contact:"People contacted", f_resp:"Replies", f_pos:"Positive replies",
+    f_meet:"Meetings generated/month", f_deals:"Deals/month", kpis:"Monthly KPIs",
+    k_rev:"Additional revenue generated / month", k_rev_e:"Deals/month × average contract value",
+    k_ltv:"LTV added / month", k_ltv_e:"Deals/month × customer lifetime value (LTV)",
+    k_cost:"ReachUP monthly cost", k_cost_e:"€500 + €300/meeting, capped at €2,000",
+    k_cac:"Customer acquisition cost", k_cac_e:"Monthly cost ÷ deals/month",
+    k_roi:"ROI on monthly revenue", k_roi_e:"Revenue / month ÷ monthly cost",
+    k_roiltv:"ROI on LTV", k_roiltv_e:"LTV added / month ÷ monthly cost",
+    tlHead:"Monthly Timeline", tlSub:"Milestones M1, M6 and 1 year", m1:"M1", m6:"M6", m12:"M12 (1 year)",
+    cashCum:"Cumulative cash collected", ltvCum:"Cumulative LTV added",
+    foot:"ReachUP — goreachup.com · Estimate based on our clients' average",
+    unit:"x", emptyVal:"—"
+  }
+};
+let lang = 'fr';
+const $ = id => document.getElementById(id);
+
+function setLang(l){
+  lang = l;
+  document.documentElement.lang = l;
+  $('lang-fr').classList.toggle('on', l==='fr');
+  $('lang-en').classList.toggle('on', l==='en');
+  document.querySelectorAll('[data-t]').forEach(el=>{ el.innerHTML = T[l][el.dataset.t] ?? el.innerHTML; });
+  calc();
+}
+
+const locale = () => lang==='fr' ? 'fr-FR' : 'en-US';
+const eur = n => new Intl.NumberFormat(locale(),{maximumFractionDigits:0}).format(Math.round(n)) + ' €';
+const num = (n,d=0) => new Intl.NumberFormat(locale(),{maximumFractionDigits:d}).format(n);
+
+function calc(){
+  const emails = +$('emails').value || 0;
+  const rr = (+$('rr').value||0)/100;
+  const prr = (+$('prr').value||0)/100;
+  const book = (+$('book').value||0)/100;
+  const close = (+$('close').value||0)/100;
+  const acv = +$('acv').value || 0;
+  const ltv = +$('ltv').value || 0;
+
+  const contacted = emails * 0.75;
+  const responses = contacted * rr;
+  const positives = responses * prr;
+  const meetings  = positives * book;
+  const deals     = meetings * close;
+
+  const monthlyRevenue = deals * acv;
+  const ltvAdded       = deals * ltv;
+  const cost = Math.min(500 + meetings * 300, 2000);
+  const roiRev = cost ? monthlyRevenue / cost : 0;
+  const roiLtv = cost ? ltvAdded / cost : 0;
+  const cac = deals ? cost / deals : 0;
+
+  $('o_emails').textContent = num(emails);
+  $('o_contact').textContent = num(Math.round(contacted));
+  $('o_resp').textContent = num(Math.round(responses));
+  $('o_pos').textContent = num(Math.round(positives));
+  $('o_meet').textContent = num(meetings,1);
+  $('o_deals').textContent = num(deals,1);
+
+  $('o_rev').textContent = eur(monthlyRevenue);
+  $('o_ltvm').textContent = eur(ltvAdded);
+  $('o_cost').textContent = eur(cost);
+  $('o_cac').textContent = eur(cac);
+  $('o_roirev').textContent = num(roiRev,1)+'x';
+  $('o_roiltv').textContent = num(roiLtv,1)+'x';
+
+  $('m1c').textContent = eur(monthlyRevenue*1);
+  $('m1l').textContent = eur(ltvAdded*1);
+  $('m6c').textContent = eur(monthlyRevenue*6);
+  $('m6l').textContent = eur(ltvAdded*6);
+  $('m12c').textContent = eur(monthlyRevenue*12);
+  $('m12l').textContent = eur(ltvAdded*12);
+}
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',calc));
+calc();
+</script>
+</body>
+</html>
