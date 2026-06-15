@@ -200,8 +200,10 @@ const T = {
     unit:"x", emptyVal:"—"
   }
 };
-let lang = 'fr';
 const $ = id => document.getElementById(id);
+// Langue par défaut via ?lang=en (sinon FR)
+const urlLang = new URLSearchParams(location.search).get('lang');
+let lang = (urlLang === 'en') ? 'en' : 'fr';
 
 function setLang(l){
   lang = l;
@@ -260,7 +262,7 @@ function calc(){
   $('m12l').textContent = eur(ltvAdded*12);
 }
 document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',calc));
-calc();
+setLang(lang);
 </script>
 </body>
 </html>
