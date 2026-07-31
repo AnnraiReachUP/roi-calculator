@@ -91,7 +91,7 @@
       <div class="plan">
         <h3>Performance</h3>
         <div class="row"><span data-t="retainer">Retainer mensuel <span class="lbl-sub">(sans engagement)</span></span><span class="v">500 €</span></div>
-        <div class="row"><span data-t="cpm">Coût par meeting <span class="lbl-sub">(plafonné à 2 000 €/mois)</span></span><span class="v">300 €</span></div>
+        <div class="row"><span data-t="cpm">Coût par meeting <span class="lbl-sub">(1er mois plafonné à 3 000 €)</span></span><span class="v">300 €</span></div>
       </div>
     </div>
 
@@ -122,7 +122,7 @@
         </div>
         <div class="kpi">
           <div class="top"><span class="name" data-t="k_cost">Coût mensuel ReachUP</span><span class="v" id="o_cost">—</span></div>
-          <div class="exp" data-t="k_cost_e">500 € + 300 €/meeting, plafonné à 2 000 €</div>
+          <div class="exp" data-t="k_cost_e">500 € + 300 €/meeting · 1er mois plafonné à 3 000 €</div>
         </div>
         <div class="kpi">
           <div class="top"><span class="name" data-t="k_cac">Coût d'acquisition client</span><span class="v" id="o_cac">—</span></div>
@@ -164,13 +164,13 @@ const T = {
     inHead:"Paramètres d'Entrée", inSub:"Configurez tous les paramètres de votre campagne",
     plan:"Plan ReachUP", emails:"📧 Emails envoyés/mois", rr:"Taux de réponse (%)", prr:"Taux réponse positive (%)",
     book:"Taux de réservation (%)", close:"Taux de closing (%)", acv:"Valeur moyenne de contrat (€)", ltv:"Valeur vie client (LTV) (€)",
-    retainer:"Retainer mensuel <span class='lbl-sub'>(sans engagement)</span>", cpm:"Coût par meeting <span class='lbl-sub'>(plafonné à 2 000 €/mois)</span>",
+    retainer:"Retainer mensuel <span class='lbl-sub'>(sans engagement)</span>", cpm:"Coût par meeting <span class='lbl-sub'>(1er mois plafonné à 3 000 €)</span>",
     fnHead:"Funnel + Résultats", fnSub:"Étapes du funnel et métriques mensuelles", funnel:"Funnel",
     f_emails:"Emails envoyés", f_contact:"Personnes contactées", f_resp:"Réponses", f_pos:"Réponses positives",
     f_meet:"Meetings générés/mois", f_deals:"Deals/mois", kpis:"KPIs Mensuels",
     k_rev:"Revenus additionnels générés / mois", k_rev_e:"Deals/mois × valeur moyenne de contrat",
     k_ltv:"LTV ajoutée / mois", k_ltv_e:"Deals/mois × valeur vie client (LTV)",
-    k_cost:"Coût mensuel ReachUP", k_cost_e:"500 € + 300 €/meeting, plafonné à 2 000 €",
+    k_cost:"Coût mensuel ReachUP", k_cost_e:"500 € + 300 €/meeting · 1er mois plafonné à 3 000 €",
     k_cac:"Coût d'acquisition client", k_cac_e:"Coût mensuel ÷ deals/mois",
     k_roi:"ROI sur revenue mensuel", k_roi_e:"Revenus / mois ÷ coût mensuel",
     k_roiltv:"ROI sur LTV", k_roiltv_e:"LTV ajoutée / mois ÷ coût mensuel",
@@ -184,13 +184,13 @@ const T = {
     inHead:"Input Parameters", inSub:"Configure all your campaign parameters",
     plan:"ReachUP Plan", emails:"📧 Emails sent/month", rr:"Response rate (%)", prr:"Positive reply rate (%)",
     book:"Booking rate (%)", close:"Closing rate (%)", acv:"Average contract value (€)", ltv:"Customer lifetime value (LTV) (€)",
-    retainer:"Monthly retainer <span class='lbl-sub'>(no commitment)</span>", cpm:"Cost per meeting <span class='lbl-sub'>(capped at €2,000/month)</span>",
+    retainer:"Monthly retainer <span class='lbl-sub'>(no commitment)</span>", cpm:"Cost per meeting <span class='lbl-sub'>(first month capped at €3,000)</span>",
     fnHead:"Funnel + Results", fnSub:"Funnel steps and monthly metrics", funnel:"Funnel",
     f_emails:"Emails sent", f_contact:"People contacted", f_resp:"Replies", f_pos:"Positive replies",
     f_meet:"Meetings generated/month", f_deals:"Deals/month", kpis:"Monthly KPIs",
     k_rev:"Additional revenue generated / month", k_rev_e:"Deals/month × average contract value",
     k_ltv:"LTV added / month", k_ltv_e:"Deals/month × customer lifetime value (LTV)",
-    k_cost:"ReachUP monthly cost", k_cost_e:"€500 + €300/meeting, capped at €2,000",
+    k_cost:"ReachUP monthly cost", k_cost_e:"€500 + €300/meeting · first month capped at €3,000",
     k_cac:"Customer acquisition cost", k_cac_e:"Monthly cost ÷ deals/month",
     k_roi:"ROI on monthly revenue", k_roi_e:"Revenue / month ÷ monthly cost",
     k_roiltv:"ROI on LTV", k_roiltv_e:"LTV added / month ÷ monthly cost",
@@ -235,7 +235,8 @@ function calc(){
 
   const monthlyRevenue = deals * acv;
   const ltvAdded       = deals * ltv;
-  const cost = Math.min(500 + meetings * 300, 2000);
+  // Plus de plafond en régime : seul le 1er mois est plafonné (3 000 €, art. 13.4).
+  const cost = 500 + meetings * 300;
   const roiRev = cost ? monthlyRevenue / cost : 0;
   const roiLtv = cost ? ltvAdded / cost : 0;
   const cac = deals ? cost / deals : 0;
